@@ -28,7 +28,7 @@ CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=
+CMAKE_BUILD_TYPE:STRING=Release
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -144,9 +144,6 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 //Path to a program.
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
-//No help, variable specified on the command line.
-CMAKE_PREFIX_PATH:UNINITIALIZED=/user/local/
-
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
 
@@ -230,8 +227,8 @@ TEST_MONGODB_SOURCE_DIR:STATIC=/mnt/nvme0/home/gxr/mongdb-run/test_mongodb
 //The directory containing a CMake configuration file for boost_headers.
 boost_headers_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_headers-1.74.0
 
-//The directory containing a CMake configuration file for libmongocxx.
-libmongocxx_DIR:PATH=libmongocxx_DIR-NOTFOUND
+//The directory containing a CMake configuration file for gflags.
+gflags_DIR:PATH=/usr/local/lib/cmake/gflags
 
 
 ########################

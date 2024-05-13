@@ -16,6 +16,7 @@
 #include <sstream>
 #include <malloc.h>
 #include <mutex>
+#include <thread>
 
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/json.hpp>
@@ -23,6 +24,8 @@
 #include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+
+#include "../util/affinity.hpp"
 
 // Redefine assert after including headers. Release builds may undefine the assert macro and result
 // in -Wunused-variable warnings.
@@ -43,7 +46,6 @@ using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
 using bsoncxx::builder::basic::make_document;
 
-
 DEFINE_uint64(str_key_size, 16, "size of key (bytes)");
 DEFINE_uint64(str_value_size, 16, "size of value (bytes)");
 // DEFINE_string(mode, "tes", "workload type(default, ycsb)");
@@ -54,7 +56,10 @@ DEFINE_string(run_file, "NULL", "run workload file name");
 DEFINE_string(URI, "mongodb://localhost:27017", "the uri of mongoDB");
 DEFINE_string(client_name, "mydb_1", "the name of client");
 DEFINE_string(collection_name, "test_1", "the name of collection");
-DEFINE_string(report_prefix,"[report] ","prefix of report data");
+DEFINE_string(report_prefix, "[report] ", "prefix of report data");
+DEFINE_uint64(num_threads, 1, "the number of threads");
+
+DEFINE_string(core_binding, "", "Core Binding, example : 0,1,16,17");
 
 typedef uint64_t mongo_key_t;
 typedef uint64_t hash_value_t;
@@ -77,10 +82,10 @@ typedef struct StrOperation
     std::string value; // if op == OP_READ, value is the groundtrue result
 } str_operation_t;
 
-void standard_report(const std::string & prefix,const std::string & name, const std::string & value){
-    std::cout << FLAGS_report_prefix << prefix + "_" << name  << " : " << value << std::endl;
+void standard_report(const std::string &prefix, const std::string &name, const std::string &value)
+{
+    std::cout << FLAGS_report_prefix << prefix + "_" << name << " : " << value << std::endl;
 }
-
 
 class mongodbBenchmark
 {
@@ -92,6 +97,8 @@ public:
 
     uint64_t num_of_load_ops;
     uint64_t num_of_run_ops;
+
+    uint64_t num_threads;
 
     std::vector<str_operation_t> str_load_ops; // store load ops
     std::vector<str_operation_t> str_run_ops;  // store run ops
@@ -105,20 +112,22 @@ public:
     std::string load_benchmark_prefix = "load";
     std::string run_benchmark_prefix = "run";
 
+    std::string core_binding;
+
     // uint64_t duration_ns;
 
     mongodbBenchmark(int argc, char **argv);
     ~mongodbBenchmark();
     op_type_t get_op_type_from_string(const std::string &s);
     std::string from_uint64_to_hex_string_w16(uint64_t value);
+
+    void clientThread(int thread_id,uint64_t core_id);
     void load_and_run();
 
     void benchmark_report(const std::string benchmark_prefix, const std::string &name, const std::string &value)
     {
         standard_report(benchmark_prefix, name, value);
     }
-
-
 };
 
 op_type_t mongodbBenchmark::get_op_type_from_string(const std::string &s)
@@ -156,6 +165,9 @@ mongodbBenchmark::mongodbBenchmark(int argc, char **argv)
 
     this->client_name = FLAGS_client_name;
     this->collection_name = FLAGS_client_name;
+    this->num_threads = FLAGS_num_threads;
+    this->core_binding = FLAGS_core_binding;
+
     uint64_t key_size = FLAGS_str_key_size;
     uint64_t value_size = FLAGS_str_value_size;
 
@@ -218,22 +230,10 @@ mongodbBenchmark::mongodbBenchmark(int argc, char **argv)
             std::cout << "Warning : Unknown OP : " << op_string << " " << mongo_key << std::endl;
             continue;
         }
-        // FIXME: update operation should modify the value ?
-        if (op_type == OP_UPDATE || op_type == OP_READ)
-        {
-            // maybe it can modify the value once
-            str_run_ops.push_back(str_operation_t{
-                op_type,
-                from_uint64_to_hex_string_w16(mongo_key),
-                common_value});
-        }
-        else if (op_type == OP_SCAN)
-        {
-            // FIXME: NOT IMPLEMENTED
-            int num_of_read;
-            run_file_stream >> num_of_read;
-            continue;
-        }
+        str_run_ops.push_back(str_operation_t{
+            op_type,
+            from_uint64_to_hex_string_w16(mongo_key),
+            common_value});
     }
     duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - file_start_time).count();
     std::cout << "read run file needs: " << duration << " s " << std::endl;
@@ -257,14 +257,65 @@ std::string mongodbBenchmark::from_uint64_to_hex_string_w16(uint64_t value)
 
 void mongodbBenchmark::load_and_run()
 {
+
     mongocxx::instance instance{}; // This should be done only once.
+
+    // Create and start client threads
+    std::vector<std::thread> threads;
+    std::vector<int> core_ids;
+    if (core_binding.size() != 0)
+    {
+        std::stringstream ss(core_binding);
+        std::string item;
+        while (std::getline(ss, item, ','))
+        {
+            core_ids.push_back(std::stoi(item));
+        }
+        if (core_ids.size() != num_threads)
+        {
+            std::cout << "WARN !! " << "core_ids.size() is not equal to number of threads" << std::endl;
+        }
+    }
+
+    std::cout<<core_ids.size()<<std::endl;
+    
+    for (int i = 0; i < num_threads; ++i)
+    {
+        uint64_t core_id=core_ids[i];
+        std::cout<<core_id<<std::endl;
+        threads.emplace_back([this, i, core_id]()
+                             { this->clientThread(i, core_id); });
+    }
+
+    // Wait for all client threads to finish
+    auto start_time = std::chrono::high_resolution_clock::now();
+    for (auto &thread : threads)
+    {
+        thread.join();
+    }
+    auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - start_time).count();
+    std::cout << "All clients run done needs: " << duration_ns << " ns " << std::endl;
+
+    double duration_s = duration_ns / (1000.0 * 1000 * 1000);
+    double throughput = num_of_load_ops * num_threads / duration_s;
+    double average_latency_ns = (double)duration_ns / num_of_load_ops / num_threads;
+
+    benchmark_report(load_benchmark_prefix, "overall_duration_ns", std::to_string(duration_ns));
+    benchmark_report(load_benchmark_prefix, "overall_duration_s", std::to_string(duration_s));
+    benchmark_report(load_benchmark_prefix, "overall_throughput", std::to_string(throughput));
+    benchmark_report(load_benchmark_prefix, "overall_average_latency_ns", std::to_string(average_latency_ns));
+}
+
+void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id)
+{
+    set_affinity(core_id);
     mongocxx::uri uri(FLAGS_URI);
     mongocxx::client client(uri);
 
     auto db = client[client_name];
     auto collection = db[collection_name];
 
-    // First choice: I can make document with only one KV pair.  
+    // First choice: I can make document with only one KV pair.
 
     // Create a Document
     {
@@ -287,7 +338,7 @@ void mongodbBenchmark::load_and_run()
         {
         case OP_INSERT:
         {
-            auto insert_one_result = collection.insert_one(make_document(kvp("i", 0)));
+            auto insert_one_result = collection.insert_one(make_document(kvp(ele.key, ele.value)));
             break;
         }
         case OP_READ:
@@ -300,9 +351,11 @@ void mongodbBenchmark::load_and_run()
         }
         case OP_UPDATE:
         {
-            auto update_one_result =
-                collection.update_one(make_document(kvp(ele.key, ele.value)),
-                                      make_document(kvp(ele.key, ele.value)));
+            auto update_one_result = collection.update_one(
+                make_document(kvp(ele.key, ele.value)),
+                make_document(kvp("$set", make_document(kvp(ele.key, ele.value)))));
+            // std::cout << "Matched documents: " << update_one_result->matched_count() << std::endl;
+            // std::cout << "Modified documents: " << update_one_result->modified_count() << std::endl;
             break;
         }
         case OP_DELETE:
@@ -323,63 +376,65 @@ void mongodbBenchmark::load_and_run()
     double duration_s = duration_ns / (1000.0 * 1000 * 1000);
     double throughput = num_of_load_ops / duration_s;
     double average_latency_ns = (double)duration_ns / num_of_load_ops;
-    
-    benchmark_report(load_benchmark_prefix,"duration_ns", std::to_string(duration_ns));
-    benchmark_report(load_benchmark_prefix,"duration_s", std::to_string(duration_s));
-    benchmark_report(load_benchmark_prefix,"throughput", std::to_string(throughput));
-    benchmark_report(load_benchmark_prefix,"average_latency_ns", std::to_string(average_latency_ns));
 
+    benchmark_report(load_benchmark_prefix, "thread_ID", std::to_string(thread_id));
+    benchmark_report(load_benchmark_prefix, "duration_ns", std::to_string(duration_ns));
+    benchmark_report(load_benchmark_prefix, "duration_s", std::to_string(duration_s));
+    benchmark_report(load_benchmark_prefix, "throughput", std::to_string(throughput));
+    benchmark_report(load_benchmark_prefix, "average_latency_ns", std::to_string(average_latency_ns));
 
     // run
-    auto run_start_time = std::chrono::high_resolution_clock::now();
-    for (auto ele : str_run_ops)
-    {
-        switch (ele.op)
-        {
-        case OP_INSERT:
-        {
+    // auto run_start_time = std::chrono::high_resolution_clock::now();
+    // for (auto ele : str_run_ops)
+    // {
+    //     switch (ele.op)
+    //     {
+    //     case OP_INSERT:
+    //     {
 
-            auto insert_one_result = collection.insert_one(make_document(kvp(ele.key, ele.value)));
-            break;
-        }
-        case OP_READ:
-        {
-            // To know if the record include values.
-            auto find_one_result = collection.find_one(make_document(kvp(ele.key, ele.value)));
-            // IMPORTANT!!
-            // ele.value = read_result;
-            break;
-        }
-        case OP_UPDATE:
-        {
-            auto update_one_result =
-                collection.update_one(make_document(kvp(ele.key, ele.value)),
-                                      make_document(kvp(ele.key, ele.value)));
-            break;
-        }
-        case OP_DELETE:
-        {
-            auto delete_one_result = collection.delete_one(make_document(kvp(ele.key, ele.value)));
-            break;
-        }
-        default:
-        {
-            std::cout << "Unknown OP In Load : " << ele.op << std::endl;
-            break;
-        }
-        }
-    }
-    auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - run_start_time).count();
-    std::cout << "Run workloads needs: " << duration_ns << " ns " << std::endl;
+    //         auto insert_one_result = collection.insert_one(make_document(kvp(ele.key, ele.value)));
+    //         break;
+    //     }
+    //     case OP_READ:
+    //     {
+    //         // To know if the record include values.
+    //         auto find_one_result = collection.find_one(make_document(kvp(ele.key, ele.value)));
+    //         // IMPORTANT!!
+    //         // ele.value = read_result;
+    //         break;
+    //     }
+    //     case OP_UPDATE:
+    //     {
+    //         auto update_one_result = collection.update_one(
+    //             make_document(kvp(ele.key, ele.value)),
+    //             make_document(kvp("$set", make_document(kvp(ele.key, ele.value)))));
+    //         // std::cout << "Matched documents: " << update_one_result->matched_count() << std::endl;
+    //         // std::cout << "Modified documents: " << update_one_result->modified_count() << std::endl;
+    //         break;
+    //     }
+    //     case OP_DELETE:
+    //     {
+    //         auto delete_one_result = collection.delete_one(make_document(kvp(ele.key, ele.value)));
+    //         break;
+    //     }
+    //     default:
+    //     {
+    //         std::cout << "Unknown OP In Load : " << ele.op << std::endl;
+    //         break;
+    //     }
+    //     }
+    // }
+    // duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - run_start_time).count();
+    // std::cout << "Run workloads needs: " << duration_ns << " ns " << std::endl;
 
-    double duration_s = duration_ns / (1000.0 * 1000 * 1000);
-    double throughput = num_of_run_ops / duration_s;
-    double average_latency_ns = (double)duration_ns / num_of_run_ops;
+    // duration_s = duration_ns / (1000.0 * 1000 * 1000);
+    // throughput = num_of_run_ops / duration_s;
+    // average_latency_ns = (double)duration_ns / num_of_run_ops;
 
-    benchmark_report(run_benchmark_prefix,"duration_ns", std::to_string(duration_ns));
-    benchmark_report(run_benchmark_prefix,"duration_s", std::to_string(duration_s));
-    benchmark_report(run_benchmark_prefix,"throughput", std::to_string(throughput));
-    benchmark_report(run_benchmark_prefix,"average_latency_ns", std::to_string(average_latency_ns));
+    // benchmark_report(run_benchmark_prefix, "duration_ns", std::to_string(duration_ns));
+    // benchmark_report(run_benchmark_prefix, "duration_s", std::to_string(duration_s));
+    // benchmark_report(run_benchmark_prefix, "throughput", std::to_string(throughput));
+    // benchmark_report(run_benchmark_prefix, "average_latency_ns", std::to_string(average_latency_ns));
 
     collection.drop();
 }

@@ -63,7 +63,7 @@ CMAKE_BINARY_DIR = /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/test.dir/all
+all: CMakeFiles/run_client.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,34 +71,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/test.dir/clean
+clean: CMakeFiles/run_client.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/test.dir
+# Target rules for target CMakeFiles/run_client.dir
 
 # All Build rule for target.
-CMakeFiles/test.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles --progress-num=1,2 "Built target test"
-.PHONY : CMakeFiles/test.dir/all
+CMakeFiles/run_client.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles --progress-num=1,2 "Built target run_client"
+.PHONY : CMakeFiles/run_client.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/test.dir/rule: cmake_check_build_system
+CMakeFiles/run_client.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run_client.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles 0
-.PHONY : CMakeFiles/test.dir/rule
+.PHONY : CMakeFiles/run_client.dir/rule
 
 # Convenience name for target.
-test: CMakeFiles/test.dir/rule
-.PHONY : test
+run_client: CMakeFiles/run_client.dir/rule
+.PHONY : run_client
 
 # clean rule for target.
-CMakeFiles/test.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/clean
-.PHONY : CMakeFiles/test.dir/clean
+CMakeFiles/run_client.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/clean
+.PHONY : CMakeFiles/run_client.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

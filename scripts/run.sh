@@ -1,108 +1,56 @@
 #!/bin/bash
 
-
-base_path=$1
-RUN_PATH=$2
-if [[ -z "${base_path}" ]];then
-	echo "base_path is empty"
-	exit
-fi
-
-
-if [[ -z "${RUN_PATH}" ]];then
-	echo "RUN_PATH is empty"
-	exit
-fi
+current=`date "+%Y-%m-%d-%H-%M-%S"`
+base_path="/mnt/nvme0/home/gxr/mongdb-run"
+RUN_PATH="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb"
 
 set -x
 
-pmem_pool_path="/mnt/pmem/"
-workload_path="/mnt/gxr/workloads/"
-# check=true
-check=false
-#perf_type=real-time
-perf_type=perf
-#perf_type=monitor
-
+workload_path="/mnt/nvme0/home/gxr/mongdb-run/workloads"
 
 ws=(
 
-"READ_found       ${workload_path}/builtin/workload_INSERT-50000000.binary                     ${workload_path}/builtin/workload_READ_found-50000000.binary 50000000"
-
-"ycsba            ${workload_path}/ycsb-a/workload_ycsb_a-30000000-30000000-load.binary        ${workload_path}/ycsb-a/workload_ycsb_a-30000000-30000000-run.binary 30000000 30000000"
-
-"ycsbb            ${workload_path}/ycsb-b/workload_ycsb_b-30000000-30000000-load.binary        ${workload_path}/ycsb-b/workload_ycsb_b-30000000-30000000-run.binary 30000000 30000000"
-
-"ycsbc            ${workload_path}/ycsb-c/workload_ycsb_c-30000000-30000000-load.binary        ${workload_path}/ycsb-c/workload_ycsb_c-30000000-30000000-run.binary 30000000 30000000"
-
-
-# "ycsbc            ${workload_path}/ycsb-c/workload_ycsb_c-100000000-100000000-load.binary        ${workload_path}/ycsb-c/workload_ycsb_c-100000000-100000000-run.binary 100000000 100000000"
-
+# "ycsba    ${workload_path}/ycsb/workloada-load-50000000-5000000.log.formated        ${workload_path}/workloada-run-50000000-5000000.log.formated 50000000 5000000"
+"ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
 )
 
 threads=(
 	1
-	2
-	4
-	6
-	8
+	5
 	10
-	12
-	# 20
-	# 32
-	# 40
+	15
+	20
+	25
+	30
 )
 
-# hs=(
-# pmem_kv/client_pmem_pacman_flatstore_h
-# )
 
 hs=(
-# dram_kv/client_dram_libcuckoo
-# dram_kv/client_dram_unordered_map
-dram_kv/client_dram_cceh
+run_client
 )
 
 kv_sizes=(
-	# "8 8"
-	# "8 16"
-	# "8 64"
-	"8 256"
-	# "8 1024"
-	# "16 8"
 	# "16 16"
 	# "16 64"
-	# "16 256"
+	"16 256"
 	# "16 1024"
-	# "32 8"
-	# "32 16"
-	# "32 64"
-	# "32 256"
-	# "32 1024"
 )
 
-
-
-LOG_PATH=${RUN_PATH}/log
-EXEC_PATH=${RUN_PATH}/exec
-BINARY_PATH=${RUN_PATH}/build/src/clients/
+LOG_PATH=${RUN_PATH}/log/${current}
+BINARY_PATH=${RUN_PATH}/build/
 
 mkdir -p ${LOG_PATH}
-mkdir -p ${EXEC_PATH}
 
 echo "init ok "
 
 pushd ${RUN_PATH}
 
-
-#cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Debug  ${base_path} 2>&1 | tee ./configure.log
-cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo  ${base_path} 2>&1 | tee ./configure.log
+cmake -B ${BINARY_PATH} -DCMAKE_BUILD_TYPE=Release ${RUN_PATH}  2>&1 | tee ${RUN_PATH}/configure.log
 if [[ "$?" != 0  ]];then
 	exit
 fi
-cmake --build build  --verbose  2>&1 | tee ./build.log
-#cmake --build build --target ${hs[*]}  --verbose  2>&1 | tee ./build.log
-# https://stackoverflow.com/questions/22623045/return-value-of-redirected-bash-command
+cmake --build ${BINARY_PATH}  --verbose  2>&1 | tee ${RUN_PATH}/build.log
+
 if [[ "${PIPESTATUS[0]}" != 0  ]];then
 	cat ${RUN_PATH}/build.log | grep --color "error"
 	echo ${RUN_PATH}/build.log
@@ -110,33 +58,22 @@ if [[ "${PIPESTATUS[0]}" != 0  ]];then
 fi
 
 
-${RUN_PATH}/generate_patch.sh
-
-
-
-
-for c in `seq 0 1 0`; do
-
 for w in "${ws[@]}"; do
 
 sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
 
 for t in ${threads[*]};do
 
-core_binding_str0=$(seq -s, 0 $((t-1)))
-core_binding_str1=$(seq -s, $((0 + 12)) $((t + 11)))
+thread_range="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143"
 
-load_core_binding=("$core_binding_str0" "$core_binding_str1")
-# load_core_binding=("$core_binding_str1")
+thread_ids=$(echo "$thread_range" | head -n $t)
 
-for l_c_b in ${load_core_binding[*]};do
+echo $thread_ids
 
-cpu_node=1
-if [[ "${l_c_b}" == $core_binding_str0 ]];then
-	cpu_node=0
-fi
+thread_binding_seq=$(echo "$thread_ids" | tr '\n' ',' | sed 's/,$//') # the seq format of thread_binding_core_id.
 
-for mem_node in 1 2; do
+echo $thread_binding_seq
+
 
 for kv_size in "${kv_sizes[@]}";do
 
@@ -160,38 +97,25 @@ run_num=${w_array[3]}
 h_name=$(basename ${h})
 
 # cmd="numactl --cpunodebind=1 --membind=2 \
-cmd="numactl --membind=${mem_node} \
+
+# threads run on numa0, using memory on NUMA4
+cmd="numactl --membind=4 \
 ${BINARY_PATH}/${h} \
---logtostdout \
---kv-name=${h_name} \
---workload-name=${w_name} \
---bench-type=${perf_type} \
---check=${check} \
---key-size=${key_size} \
---value-size=${value_size} \
---load_threads=${t} \
---load_trace_ops=${load_num} \
---run_threads=${t} \
---run_trace_ops=${run_num} \
---trace-type=file \
---load_trace_filename=${w_load_file} \
---run_trace_filename=${w_run_file} \
---pmem-pool-path=${pmem_pool_path} \
---load_core_binding=${l_c_b} \
---run_core_binding=${l_c_b} \
---undefok=pmem-pool-path
+--num_threads=${t} \
+--core_binding=${thread_binding_seq} \
+--str_key_size=${key_size} \
+--str_key_size=${value_size} \
+--load_file=${w_load_file} \
+--run_file=${w_run_file} 
 "
 
 
-this_log_path=${LOG_PATH}/${c}.${perf_type}.${key_size}.${value_size}.${w_name}.${h_name}.${t}.${load_num}.${cpu_node}.${mem_node}.log
+this_log_path=${LOG_PATH}/${h_name}.${t}.thread.${key_size}.${value_size}.${w_name}.${load_num}.${run_num}.log
 
 echo ${cmd} 2>&1 |  tee ${this_log_path}
 
 echo ${cmd}
 sleep 5
-${RUN_PATH}//reset_pmem.sh
-rm -rf /mnt/pmem/*
-sleep 10
 
 
 # monitor need sudo
@@ -208,8 +132,7 @@ done
 done
 done
 done
-done
-done
-done
+# done
+
 
 popd

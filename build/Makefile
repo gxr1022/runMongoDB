@@ -117,41 +117,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named test
+# Target rules for targets named run_client
 
 # Build rule for target.
-test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
-.PHONY : test
+run_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_client
+.PHONY : run_client
 
 # fast build rule for target.
-test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-.PHONY : test/fast
+run_client/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/build
+.PHONY : run_client/fast
 
-test.o: test.cpp.o
-.PHONY : test.o
+src/run_client.o: src/run_client.cpp.o
+.PHONY : src/run_client.o
 
 # target to build an object file
-test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test.cpp.o
-.PHONY : test.cpp.o
+src/run_client.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/src/run_client.cpp.o
+.PHONY : src/run_client.cpp.o
 
-test.i: test.cpp.i
-.PHONY : test.i
+src/run_client.i: src/run_client.cpp.i
+.PHONY : src/run_client.i
 
 # target to preprocess a source file
-test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test.cpp.i
-.PHONY : test.cpp.i
+src/run_client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/src/run_client.cpp.i
+.PHONY : src/run_client.cpp.i
 
-test.s: test.cpp.s
-.PHONY : test.s
+src/run_client.s: src/run_client.cpp.s
+.PHONY : src/run_client.s
 
 # target to generate assembly for a file
-test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test.cpp.s
-.PHONY : test.cpp.s
+src/run_client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/src/run_client.cpp.s
+.PHONY : src/run_client.cpp.s
 
 # Help Target
 help:
@@ -161,10 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... test"
-	@echo "... test.o"
-	@echo "... test.i"
-	@echo "... test.s"
+	@echo "... run_client"
+	@echo "... src/run_client.o"
+	@echo "... src/run_client.i"
+	@echo "... src/run_client.s"
 .PHONY : help
 
 
