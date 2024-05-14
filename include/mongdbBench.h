@@ -50,6 +50,8 @@ DEFINE_uint64(str_key_size, 16, "size of key (bytes)");
 DEFINE_uint64(str_value_size, 16, "size of value (bytes)");
 // DEFINE_string(mode, "tes", "workload type(default, ycsb)");
 
+DEFINE_bool(first_mode, true, "fist mode start multiply clients on the same mongoDB server");
+
 DEFINE_string(load_file, "NULL", "load workload file name");
 DEFINE_string(run_file, "NULL", "run workload file name");
 
@@ -60,6 +62,7 @@ DEFINE_string(report_prefix, "[report] ", "prefix of report data");
 DEFINE_uint64(num_threads, 1, "the number of threads");
 
 DEFINE_string(core_binding, "", "Core Binding, example : 0,1,16,17");
+DEFINE_string(URI_set, "", "URIs of different connections ,example : mongodb://localhost:27017, mongodb://localhost:27018");
 
 typedef uint64_t mongo_key_t;
 typedef uint64_t hash_value_t;
@@ -103,6 +106,8 @@ public:
     std::vector<str_operation_t> str_load_ops; // store load ops
     std::vector<str_operation_t> str_run_ops;  // store run ops
 
+    std::vector<std::string> URIs;
+
     std::string load_workload_file_name;
     std::string run_workload_file_name;
 
@@ -114,14 +119,17 @@ public:
 
     std::string core_binding;
 
+    bool first_mode;
+
     // uint64_t duration_ns;
 
     mongodbBenchmark(int argc, char **argv);
     ~mongodbBenchmark();
     op_type_t get_op_type_from_string(const std::string &s);
     std::string from_uint64_to_hex_string_w16(uint64_t value);
+    void split_string_from_input(std::vector<int> & splited_str, std::string input_str);
 
-    void clientThread(int thread_id,uint64_t core_id,uint64_t num_of_ops_per_thread);
+    void clientThread(int thread_id, uint64_t core_id, uint64_t num_of_ops_per_thread);
     void load_and_run();
 
     void benchmark_report(const std::string benchmark_prefix, const std::string &name, const std::string &value)
@@ -167,9 +175,22 @@ mongodbBenchmark::mongodbBenchmark(int argc, char **argv)
     this->collection_name = FLAGS_client_name;
     this->num_threads = FLAGS_num_threads;
     this->core_binding = FLAGS_core_binding;
+    this->first_mode = FLAGS_first_mode;
 
     uint64_t key_size = FLAGS_str_key_size;
     uint64_t value_size = FLAGS_str_value_size;
+
+
+    if (FLAGS_URI_set.size() != 0)
+    {
+        std::stringstream ss(FLAGS_URI_set);
+        std::string item;
+        while (std::getline(ss, item, ','))
+        {
+            URIs.push_back(item);
+            std::cout<<item<<" ";
+        }
+    }
 
     num_of_load_ops = 0;
     num_of_run_ops = 0;
@@ -179,8 +200,8 @@ mongodbBenchmark::mongodbBenchmark(int argc, char **argv)
     {
         common_value += (char)('a' + (i % 26));
     }
-    std::cout << common_value << std::endl;
-    std::cout << common_value.size() << std::endl;
+    // std::cout << common_value << std::endl;
+    // std::cout << common_value.size() << std::endl;
 
     std::string op_string;
     mongo_key_t mongo_key;
@@ -255,35 +276,35 @@ std::string mongodbBenchmark::from_uint64_to_hex_string_w16(uint64_t value)
     return ss.str();
 }
 
-void mongodbBenchmark::load_and_run()
+void mongodbBenchmark::split_string_from_input(std::vector<int>& splited_str, std::string input_str)
 {
-
-    mongocxx::instance instance{}; // This should be done only once.
-    
-    // Create and start client threads
-    std::vector<std::thread> threads;
-    std::vector<int> core_ids;
-    if (core_binding.size() != 0)
+    if (input_str.size() != 0)
     {
-        std::stringstream ss(core_binding);
+        std::stringstream ss(input_str);
         std::string item;
         while (std::getline(ss, item, ','))
         {
-            core_ids.push_back(std::stoi(item));
-            // std::cout<<std::stoi(item)<<" ";
+            splited_str.push_back(std::stoi(item));
+            std::cout<<std::stoi(item)<<" ";
         }
-        // std::cout<<std::endl;
-        // if (core_ids.size() != num_threads)
-        // {
-        //     std::cout << "WARN !! " << "core_ids.size() is not equal to number of threads" << std::endl;
-        // }
     }
+}
 
-    
-    uint64_t num_of_ops_per_thread=num_of_load_ops/num_threads;
-    for (int i = 0; i < num_threads; ++i)
+void mongodbBenchmark::load_and_run()
+{
+    mongocxx::instance instance{}; // This should be done only once.
+
+    // Create and start client threads
+    std::vector<std::thread> threads;
+    std::vector<int> core_ids;
+    split_string_from_input(core_ids, core_binding);
+
+    uint64_t num_of_ops_per_thread = num_of_load_ops / num_threads;
+    // std::cout<<num_of_ops_per_thread<<std::endl;
+    // std::cout<<core_ids.size()<<std::endl;
+    for (int i = 0; i < num_threads; i++)
     {
-        uint64_t core_id=core_ids[i];
+        uint64_t core_id = core_ids[i];
         // std::cout<<core_id<<std::endl;
         threads.emplace_back([this, i, core_id, num_of_ops_per_thread]()
                              { this->clientThread(i, core_id, num_of_ops_per_thread); });
@@ -299,8 +320,8 @@ void mongodbBenchmark::load_and_run()
     std::cout << "All clients run done needs: " << duration_ns << " ns " << std::endl;
 
     double duration_s = duration_ns / (1000.0 * 1000 * 1000);
-    double throughput = num_of_load_ops * num_threads / duration_s;
-    double average_latency_ns = (double)duration_ns / num_of_load_ops / num_threads;
+    double throughput = num_of_load_ops / duration_s;
+    double average_latency_ns = (double)duration_ns / num_of_load_ops;
 
     benchmark_report(load_benchmark_prefix, "overall_duration_ns", std::to_string(duration_ns));
     benchmark_report(load_benchmark_prefix, "overall_duration_s", std::to_string(duration_s));
@@ -308,12 +329,21 @@ void mongodbBenchmark::load_and_run()
     benchmark_report(load_benchmark_prefix, "overall_average_latency_ns", std::to_string(average_latency_ns));
 }
 
-void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id,uint64_t num_of_ops_per_thread)
+void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id, uint64_t num_of_ops_per_thread)
 {
     set_affinity(core_id);
-    mongocxx::uri uri(FLAGS_URI);
-    mongocxx::client client(uri);
 
+    mongocxx::uri uri;
+    if (first_mode)
+    {
+        uri=mongocxx::uri(FLAGS_URI);
+    }
+    else
+    {
+        uri=mongocxx::uri(URIs[thread_id]);
+    }
+    std::cout << "URI: " << uri.to_string() << std::endl;
+    mongocxx::client client(uri);
     auto db = client[client_name];
     auto collection = db[collection_name];
 
@@ -332,13 +362,14 @@ void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id,uint64_t num
         assert(0 == name.compare("MongoDB"));
     }
 
-    int start_index=thread_id*num_of_ops_per_thread;
-    int end_index=(thread_id+1)*num_of_ops_per_thread;
-    
+    int start_index = thread_id * num_of_ops_per_thread;
+    int end_index = (thread_id + 1) * num_of_ops_per_thread;
+
     // Now let's start running YCSB benchmarks ……
     auto load_start_time = std::chrono::high_resolution_clock::now();
-    for (int i = start_index; i < end_index && i < str_load_ops.size(); ++i) {
-        auto ele=str_load_ops[i];
+    for (int i = start_index; i < end_index && i < str_load_ops.size(); ++i)
+    {
+        auto ele = str_load_ops[i];
         switch (ele.op)
         {
         case OP_INSERT:
@@ -374,7 +405,6 @@ void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id,uint64_t num
             break;
         }
         }
-        
     }
 
     auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - load_start_time).count();

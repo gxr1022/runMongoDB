@@ -1,5 +1,5 @@
 #!/bin/bash
-
+mode=$1
 current=`date "+%Y-%m-%d-%H-%M-%S"`
 base_path="/mnt/nvme0/home/gxr/mongdb-run"
 RUN_PATH="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb"
@@ -36,7 +36,9 @@ kv_sizes=(
 	# "16 1024"
 )
 
-LOG_PATH=${RUN_PATH}/log/${current}
+# first_mode=(true false) 
+
+LOG_PATH=${RUN_PATH}/log/${current}.${first_mode}
 BINARY_PATH=${RUN_PATH}/build/
 
 mkdir -p ${LOG_PATH}
@@ -57,6 +59,7 @@ if [[ "${PIPESTATUS[0]}" != 0  ]];then
 	exit
 fi
 
+# for mode in "${first_mode[@]}"; do
 
 for w in "${ws[@]}"; do
 
@@ -65,6 +68,16 @@ sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
 for t in ${threads[*]};do
 
 thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143"
+
+
+uri_set="mongodb://localhost:27017"
+for ((port=27018; port<=27046; port++)); do
+    uri_set+=",mongodb://localhost:$port"
+done
+
+echo "$uri_set"
+
+
 
 
 for kv_size in "${kv_sizes[@]}";do
@@ -98,7 +111,9 @@ ${BINARY_PATH}/${h} \
 --str_key_size=${key_size} \
 --str_key_size=${value_size} \
 --load_file=${w_load_file} \
---run_file=${w_run_file} 
+--run_file=${w_run_file}  \
+--URI_set=${uri_set} \
+--first_mode=${mode}
 "
 
 
@@ -106,7 +121,7 @@ this_log_path=${LOG_PATH}/${h_name}.${t}.thread.${key_size}.${value_size}.${w_na
 
 echo ${cmd} 2>&1 |  tee ${this_log_path}
 
-echo ${cmd}
+# echo ${cmd}
 sleep 5
 
 
