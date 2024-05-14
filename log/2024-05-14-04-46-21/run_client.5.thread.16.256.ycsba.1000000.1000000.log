@@ -1,0 +1,46 @@
+numactl --membind=4 /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build//run_client --num_threads=5 --core_binding=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143 --str_key_size=16 --str_key_size=256 --load_file=/mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-load-1000000-1000000.log.formated --run_file=/mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-run-1000000-1000000.log.formated
+abcdefghijklmnop
+16
+reading workload files ...
+load_filename : /mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-load-1000000-1000000.log.formated
+read load file needs: 525020670 s 
+run_filename : /mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-run-1000000-1000000.log.formated
+read run file needs: 515072269 s 
+num_of_load_ops is 1000000
+num_of_run_ops is 1000000
+WARN !! core_ids.size() is not equal to number of threads
+Load workloads needs: 28089654499 ns 
+[report] load_thread_ID : 2
+[report] load_duration_ns : 28089654499
+[report] load_duration_s : 28.089654
+[report] load_throughput : 7120.059095
+[report] load_average_latency_ns : 140448.272495
+Load workloads needs: 28142950297 ns 
+[report] load_thread_ID : 1
+[report] load_duration_ns : 28142950297
+[report] load_duration_s : 28.142950
+[report] load_throughput : 7106.575462
+[report] load_average_latency_ns : 140714.751485
+Load workloads needs: 28181486009 ns 
+[report] load_thread_ID : 3
+[report] load_duration_ns : 28181486009
+[report] load_duration_s : 28.181486
+[report] load_throughput : 7096.857843
+[report] load_average_latency_ns : 140907.430045
+Load workloads needs: 28291803638 ns 
+[report] load_thread_ID : 4
+[report] load_duration_ns : 28291803638
+[report] load_duration_s : 28.291804
+[report] load_throughput : 7069.185216
+[report] load_average_latency_ns : 141459.018190
+Load workloads needs: 28555023599 ns 
+[report] load_thread_ID : 0
+[report] load_duration_ns : 28555023599
+[report] load_duration_s : 28.555024
+[report] load_throughput : 7004.021527
+[report] load_average_latency_ns : 142775.117995
+All clients run done needs: 28556459972 ns 
+[report] load_overall_duration_ns : 28556459972
+[report] load_overall_duration_s : 28.556460
+[report] load_overall_throughput : 175091.730729
+[report] load_overall_average_latency_ns : 5711.291994

@@ -121,7 +121,7 @@ public:
     op_type_t get_op_type_from_string(const std::string &s);
     std::string from_uint64_to_hex_string_w16(uint64_t value);
 
-    void clientThread(int thread_id,uint64_t core_id);
+    void clientThread(int thread_id,uint64_t core_id,uint64_t num_of_ops_per_thread);
     void load_and_run();
 
     void benchmark_report(const std::string benchmark_prefix, const std::string &name, const std::string &value)
@@ -259,7 +259,7 @@ void mongodbBenchmark::load_and_run()
 {
 
     mongocxx::instance instance{}; // This should be done only once.
-
+    
     // Create and start client threads
     std::vector<std::thread> threads;
     std::vector<int> core_ids;
@@ -270,21 +270,23 @@ void mongodbBenchmark::load_and_run()
         while (std::getline(ss, item, ','))
         {
             core_ids.push_back(std::stoi(item));
+            // std::cout<<std::stoi(item)<<" ";
         }
-        if (core_ids.size() != num_threads)
-        {
-            std::cout << "WARN !! " << "core_ids.size() is not equal to number of threads" << std::endl;
-        }
+        // std::cout<<std::endl;
+        // if (core_ids.size() != num_threads)
+        // {
+        //     std::cout << "WARN !! " << "core_ids.size() is not equal to number of threads" << std::endl;
+        // }
     }
 
-    std::cout<<core_ids.size()<<std::endl;
     
+    uint64_t num_of_ops_per_thread=num_of_load_ops/num_threads;
     for (int i = 0; i < num_threads; ++i)
     {
         uint64_t core_id=core_ids[i];
-        std::cout<<core_id<<std::endl;
-        threads.emplace_back([this, i, core_id]()
-                             { this->clientThread(i, core_id); });
+        // std::cout<<core_id<<std::endl;
+        threads.emplace_back([this, i, core_id, num_of_ops_per_thread]()
+                             { this->clientThread(i, core_id, num_of_ops_per_thread); });
     }
 
     // Wait for all client threads to finish
@@ -306,7 +308,7 @@ void mongodbBenchmark::load_and_run()
     benchmark_report(load_benchmark_prefix, "overall_average_latency_ns", std::to_string(average_latency_ns));
 }
 
-void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id)
+void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id,uint64_t num_of_ops_per_thread)
 {
     set_affinity(core_id);
     mongocxx::uri uri(FLAGS_URI);
@@ -330,10 +332,13 @@ void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id)
         assert(0 == name.compare("MongoDB"));
     }
 
+    int start_index=thread_id*num_of_ops_per_thread;
+    int end_index=(thread_id+1)*num_of_ops_per_thread;
+    
     // Now let's start running YCSB benchmarks ……
     auto load_start_time = std::chrono::high_resolution_clock::now();
-    for (auto ele : str_load_ops)
-    {
+    for (int i = start_index; i < end_index && i < str_load_ops.size(); ++i) {
+        auto ele=str_load_ops[i];
         switch (ele.op)
         {
         case OP_INSERT:
@@ -369,13 +374,15 @@ void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id)
             break;
         }
         }
+        
     }
+
     auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - load_start_time).count();
     std::cout << "Load workloads needs: " << duration_ns << " ns " << std::endl;
 
     double duration_s = duration_ns / (1000.0 * 1000 * 1000);
-    double throughput = num_of_load_ops / duration_s;
-    double average_latency_ns = (double)duration_ns / num_of_load_ops;
+    double throughput = num_of_ops_per_thread / duration_s;
+    double average_latency_ns = (double)duration_ns / num_of_ops_per_thread;
 
     benchmark_report(load_benchmark_prefix, "thread_ID", std::to_string(thread_id));
     benchmark_report(load_benchmark_prefix, "duration_ns", std::to_string(duration_ns));
@@ -436,5 +443,5 @@ void mongodbBenchmark::clientThread(int thread_id, uint64_t core_id)
     // benchmark_report(run_benchmark_prefix, "throughput", std::to_string(throughput));
     // benchmark_report(run_benchmark_prefix, "average_latency_ns", std::to_string(average_latency_ns));
 
-    collection.drop();
+    // collection.drop();
 }

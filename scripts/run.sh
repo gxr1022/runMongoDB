@@ -4,14 +4,14 @@ current=`date "+%Y-%m-%d-%H-%M-%S"`
 base_path="/mnt/nvme0/home/gxr/mongdb-run"
 RUN_PATH="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb"
 
-set -x
+# set -x
 
 workload_path="/mnt/nvme0/home/gxr/mongdb-run/workloads"
 
 ws=(
 
-# "ycsba    ${workload_path}/ycsb/workloada-load-50000000-5000000.log.formated        ${workload_path}/workloada-run-50000000-5000000.log.formated 50000000 5000000"
-"ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
+"ycsba    ${workload_path}/ycsb/workloada-load-1000000-1000000.log.formated        ${workload_path}/ycsb/workloada-run-1000000-1000000.log.formated 1000000 1000000"
+# "ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
 )
 
 threads=(
@@ -64,15 +64,7 @@ sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
 
 for t in ${threads[*]};do
 
-thread_range="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143"
-
-thread_ids=$(echo "$thread_range" | head -n $t)
-
-echo $thread_ids
-
-thread_binding_seq=$(echo "$thread_ids" | tr '\n' ',' | sed 's/,$//') # the seq format of thread_binding_core_id.
-
-echo $thread_binding_seq
+thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143"
 
 
 for kv_size in "${kv_sizes[@]}";do
