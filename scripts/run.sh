@@ -1,5 +1,6 @@
 #!/bin/bash
 mode=$1
+# mode=false
 current=`date "+%Y-%m-%d-%H-%M-%S"`
 base_path="/mnt/nvme0/home/gxr/mongdb-run"
 RUN_PATH="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb"
@@ -117,7 +118,7 @@ ${BINARY_PATH}/${h} \
 "
 
 
-this_log_path=${LOG_PATH}/${h_name}.${t}.thread.${key_size}.${value_size}.${w_name}.${load_num}.${run_num}.log
+this_log_path=${LOG_PATH}/${h_name}.${t}.thread.${mode}.${key_size}.${value_size}.${w_name}.${load_num}.${run_num}.log
 
 echo ${cmd} 2>&1 |  tee ${this_log_path}
 
