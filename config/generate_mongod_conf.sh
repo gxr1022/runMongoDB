@@ -16,7 +16,7 @@ systemLog:
   path: "/var/log/mongodb/mongod${i}.log"
   logAppend: true
 storage:
-  dbPath: "/var/lib/mongodb${i}"
+  dbPath: "/ramDisk/mongodb${i}"
 net:
   port: $port
   bindIp: 127.0.0.1

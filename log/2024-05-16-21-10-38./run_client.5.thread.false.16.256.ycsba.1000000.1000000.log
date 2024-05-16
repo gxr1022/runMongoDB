@@ -1,0 +1,48 @@
+numactl --membind=4 /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build//run_client --num_threads=5 --core_binding=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143 --str_key_size=16 --str_key_size=256 --load_file=/mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-load-1000000-1000000.log.formated --run_file=/mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-run-1000000-1000000.log.formated --URI_set=mongodb://localhost:27017,mongodb://localhost:27018,mongodb://localhost:27019,mongodb://localhost:27020,mongodb://localhost:27021,mongodb://localhost:27022,mongodb://localhost:27023,mongodb://localhost:27024,mongodb://localhost:27025,mongodb://localhost:27026,mongodb://localhost:27027,mongodb://localhost:27028,mongodb://localhost:27029,mongodb://localhost:27030,mongodb://localhost:27031,mongodb://localhost:27032,mongodb://localhost:27033,mongodb://localhost:27034,mongodb://localhost:27035,mongodb://localhost:27036,mongodb://localhost:27037,mongodb://localhost:27038,mongodb://localhost:27039,mongodb://localhost:27040,mongodb://localhost:27041,mongodb://localhost:27042,mongodb://localhost:27043,mongodb://localhost:27044,mongodb://localhost:27045,mongodb://localhost:27046 --first_mode=false
+mongodb://localhost:27017 mongodb://localhost:27018 mongodb://localhost:27019 mongodb://localhost:27020 mongodb://localhost:27021 mongodb://localhost:27022 mongodb://localhost:27023 mongodb://localhost:27024 mongodb://localhost:27025 mongodb://localhost:27026 mongodb://localhost:27027 mongodb://localhost:27028 mongodb://localhost:27029 mongodb://localhost:27030 mongodb://localhost:27031 mongodb://localhost:27032 mongodb://localhost:27033 mongodb://localhost:27034 mongodb://localhost:27035 mongodb://localhost:27036 mongodb://localhost:27037 mongodb://localhost:27038 mongodb://localhost:27039 mongodb://localhost:27040 mongodb://localhost:27041 mongodb://localhost:27042 mongodb://localhost:27043 mongodb://localhost:27044 mongodb://localhost:27045 mongodb://localhost:27046 reading workload files ...
+load_filename : /mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-load-1000000-1000000.log.formated
+read load file needs: 587915027 s 
+run_filename : /mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-run-1000000-1000000.log.formated
+read run file needs: 552901943 s 
+num_of_load_ops is 1000000
+num_of_run_ops is 1000000
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 URI: mongodb://localhost:27017
+URI: mongodb://localhost:27018
+URI: mongodb://localhost:27020
+URI: mongodb://localhost:27021
+URI: mongodb://localhost:27019
+Load workloads needs: 26160901569 ns 
+[report] load_thread_ID : 2
+[report] load_duration_ns : 26160901569
+[report] load_duration_s : 26.160902
+[report] load_throughput : 7644.996464
+[report] load_average_latency_ns : 130804.507845
+Load workloads needs: 26976246671 ns 
+[report] load_thread_ID : 1
+[report] load_duration_ns : 26976246671
+[report] load_duration_s : 26.976247
+[report] load_throughput : 7413.929834
+[report] load_average_latency_ns : 134881.233355
+Load workloads needs: 27158170045 ns 
+[report] load_thread_ID : 3
+[report] load_duration_ns : 27158170045
+[report] load_duration_s : 27.158170
+[report] load_throughput : 7364.266431
+[report] load_average_latency_ns : 135790.850225
+Load workloads needs: 27195315808 ns 
+[report] load_thread_ID : 4
+[report] load_duration_ns : 27195315808
+[report] load_duration_s : 27.195316
+[report] load_throughput : 7354.207666
+[report] load_average_latency_ns : 135976.579040
+Load workloads needs: 27486668642 ns 
+[report] load_thread_ID : 0
+[report] load_duration_ns : 27486668642
+[report] load_duration_s : 27.486669
+[report] load_throughput : 7276.254631
+[report] load_average_latency_ns : 137433.343210
+All clients run done needs: 27487850275 ns 
+[report] load_overall_duration_ns : 27487850275
+[report] load_overall_duration_s : 27.487850
+[report] load_overall_throughput : 36379.709217
+[report] load_overall_average_latency_ns : 27487.850275

@@ -10,8 +10,10 @@ RUN_PATH="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb"
 workload_path="/mnt/nvme0/home/gxr/mongdb-run/workloads"
 
 ws=(
-
-"ycsba    ${workload_path}/ycsb/workloada-load-1000000-1000000.log.formated        ${workload_path}/ycsb/workloada-run-1000000-1000000.log.formated 1000000 1000000"
+"ycsba    ${workload_path}/ycsb/workloada-load-10000000-10000000.log.formated        ${workload_path}/ycsb/workloada-run-10000000-10000000.log.formated 10000000 10000000"
+# "ycsba    ${workload_path}/ycsb/workloada-load-1000000-1000000.log.formated        ${workload_path}/ycsb/workloada-run-1000000-1000000.log.formated 1000000 1000000"
+# "ycsba    ${workload_path}/ycsb/workloada-load-5000000-5000000.log.formated        ${workload_path}/ycsb/workloada-run-5000000-5000000.log.formated 5000000 5000000"
+# "ycsba    ${workload_path}/ycsb/workloada-load-50000000-50000000.log.formated        ${workload_path}/ycsb/workloada-run-50000000-50000000.log.formated 50000000 50000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
 )
 
@@ -31,10 +33,10 @@ run_client
 )
 
 kv_sizes=(
-	# "16 16"
-	# "16 64"
+	"16 16"
+	"16 64"
 	"16 256"
-	# "16 1024"
+	"16 1024"
 )
 
 # first_mode=(true false) 
@@ -68,6 +70,8 @@ sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
 
 for t in ${threads[*]};do
 
+ 
+
 thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143"
 
 
@@ -88,7 +92,6 @@ key_size=${kv_size_array[0]}
 value_size=${kv_size_array[1]}
 
 for h in ${hs[*]};do
-
 
 w_array=( ${w} )
 
