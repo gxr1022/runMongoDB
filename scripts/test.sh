@@ -9,8 +9,8 @@ set -x
 
 config_dir="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/config"
 
-# first_mode=(true false)
-first_mode=(true)
+first_mode=(true false)
+# first_mode=(false)
 
 for mode in "${first_mode[@]}"; do
 
