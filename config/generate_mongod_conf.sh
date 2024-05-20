@@ -2,7 +2,7 @@
 
 conf_dir="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/config"
 
-num_files=30
+num_files=128
 
 start_port=27017
 
@@ -16,7 +16,7 @@ systemLog:
   path: "/var/log/mongodb/mongod${i}.log"
   logAppend: true
 storage:
-  dbPath: "/ramDisk/mongodb${i}"
+  dbPath: "/mnt/nvme0/home/gxr/mongdb-run/ramDisk/mongodb${i}"
 net:
   port: $port
   bindIp: 127.0.0.1
