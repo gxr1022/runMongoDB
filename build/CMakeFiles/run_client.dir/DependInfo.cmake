@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/src/run_client.cpp" "CMakeFiles/run_client.dir/src/run_client.cpp.o" "gcc" "CMakeFiles/run_client.dir/src/run_client.cpp.o.d"
+  "/home/gxr/mongodb-run/test_mongodb/src/run_client.cpp" "CMakeFiles/run_client.dir/src/run_client.cpp.o" "gcc" "CMakeFiles/run_client.dir/src/run_client.cpp.o.d"
   )
 
 # Targets to which this target links.

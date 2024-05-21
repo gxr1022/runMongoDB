@@ -7,7 +7,7 @@ set -x
 # # # --storageEngine inMemory
 # # --nojournal --smallFiles --noprealloc
 
-config_dir="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/config"
+config_dir="/home/gxr/mongodb-run/test_mongodb/config"
 
 first_mode=(true false)
 # first_mode=(false)

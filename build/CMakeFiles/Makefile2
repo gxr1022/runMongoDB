@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/nvme0/home/gxr/mongdb-run/test_mongodb
+CMAKE_SOURCE_DIR = /home/gxr/mongodb-run/test_mongodb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build
+CMAKE_BINARY_DIR = /home/gxr/mongodb-run/test_mongodb/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -81,14 +81,14 @@ clean: CMakeFiles/run_client.dir/clean
 CMakeFiles/run_client.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_client.dir/build.make CMakeFiles/run_client.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles --progress-num=1,2 "Built target run_client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gxr/mongodb-run/test_mongodb/build/CMakeFiles --progress-num=1,2 "Built target run_client"
 .PHONY : CMakeFiles/run_client.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/run_client.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gxr/mongodb-run/test_mongodb/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run_client.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gxr/mongodb-run/test_mongodb/build/CMakeFiles 0
 .PHONY : CMakeFiles/run_client.dir/rule
 
 # Convenience name for target.

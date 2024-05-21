@@ -1,0 +1,41 @@
+numactl --membind=0 /home/gxr/mongodb-run/test_mongodb/build//run_client --num_threads=4 --core_binding=0,1,2,3,4,5,6,7,8,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35 --str_key_size=16 --str_key_size=64 --load_file=/home/gxr/mongodb-run/workloads/ycsb/workloada-load-10000000-10000000.log.formated --run_file=/home/gxr/mongodb-run/workloads/ycsb/workloada-run-10000000-10000000.log.formated --URI_set=mongodb://localhost:27017,mongodb://localhost:27018,mongodb://localhost:27019,mongodb://localhost:27020,mongodb://localhost:27021,mongodb://localhost:27022,mongodb://localhost:27023,mongodb://localhost:27024,mongodb://localhost:27025,mongodb://localhost:27026,mongodb://localhost:27027,mongodb://localhost:27028,mongodb://localhost:27029,mongodb://localhost:27030,mongodb://localhost:27031,mongodb://localhost:27032,mongodb://localhost:27033,mongodb://localhost:27034,mongodb://localhost:27035,mongodb://localhost:27036,mongodb://localhost:27037,mongodb://localhost:27038,mongodb://localhost:27039,mongodb://localhost:27040,mongodb://localhost:27041,mongodb://localhost:27042,mongodb://localhost:27043,mongodb://localhost:27044,mongodb://localhost:27045,mongodb://localhost:27046 --first_mode=false
+mongodb://localhost:27017 mongodb://localhost:27018 mongodb://localhost:27019 mongodb://localhost:27020 mongodb://localhost:27021 mongodb://localhost:27022 mongodb://localhost:27023 mongodb://localhost:27024 mongodb://localhost:27025 mongodb://localhost:27026 mongodb://localhost:27027 mongodb://localhost:27028 mongodb://localhost:27029 mongodb://localhost:27030 mongodb://localhost:27031 mongodb://localhost:27032 mongodb://localhost:27033 mongodb://localhost:27034 mongodb://localhost:27035 mongodb://localhost:27036 mongodb://localhost:27037 mongodb://localhost:27038 mongodb://localhost:27039 mongodb://localhost:27040 mongodb://localhost:27041 mongodb://localhost:27042 mongodb://localhost:27043 mongodb://localhost:27044 mongodb://localhost:27045 mongodb://localhost:27046 reading workload files ...
+load_filename : /home/gxr/mongodb-run/workloads/ycsb/workloada-load-10000000-10000000.log.formated
+read load file needs: 1101423204 s 
+run_filename : /home/gxr/mongodb-run/workloads/ycsb/workloada-run-10000000-10000000.log.formated
+read run file needs: 1004975925 s 
+num_of_load_ops is 1862736
+num_of_run_ops is 1934501
+0 1 2 3 4 5 6 7 8 9 10 11 24 25 26 27 28 29 30 31 32 33 34 35 URI: URI: mongodb://localhost:27020URI: mongodb://localhost:27019
+
+URI: mongodb://localhost:27017
+mongodb://localhost:27018
+Load workloads needs: 22768006317 ns 
+[report] load_thread_ID : 1
+[report] load_duration_ns : 22768006317
+[report] load_duration_s : 22.768006
+[report] load_throughput : 20453.437755
+[report] load_average_latency_ns : 48891.536572
+Load workloads needs: 23090966607 ns 
+[report] load_thread_ID : 0
+[report] load_duration_ns : 23090966607
+[report] load_duration_s : 23.090967
+[report] load_throughput : 20167.367089
+[report] load_average_latency_ns : 49585.054687
+Load workloads needs: 26030241009 ns 
+[report] load_thread_ID : 2
+[report] load_duration_ns : 26030241009
+[report] load_duration_s : 26.030241
+[report] load_throughput : 17890.114803
+[report] load_average_latency_ns : 55896.790547
+Load workloads needs: 28896385896 ns 
+[report] load_thread_ID : 3
+[report] load_duration_ns : 28896385896
+[report] load_duration_s : 28.896386
+[report] load_throughput : 16115.648569
+[report] load_average_latency_ns : 62051.489628
+All clients run done needs: 28897103077 ns 
+[report] load_overall_duration_ns : 28897103077
+[report] load_overall_duration_s : 28.897103
+[report] load_overall_throughput : 64460.994413
+[report] load_overall_average_latency_ns : 15513.257422

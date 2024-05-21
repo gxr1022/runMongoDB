@@ -1,13 +1,23 @@
 #!/bin/bash
-mode=$1
+# mode=$1
 # mode=false
+
+sudo /home/gxr/mongodb-run/test_mongodb/scripts/clear_ramdisk.sh
+
 current=`date "+%Y-%m-%d-%H-%M-%S"`
-base_path="/mnt/nvme0/home/gxr/mongdb-run"
-RUN_PATH="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb"
+base_path="/home/gxr/mongodb-run/"
+RUN_PATH="/home/gxr/mongodb-run/test_mongodb"
 
-# set -x
+config_dir="/home/gxr/mongodb-run/test_mongodb/config"
 
-workload_path="/mnt/nvme0/home/gxr/mongdb-run/workloads"
+
+set -x
+
+workload_path="/home/gxr/mongodb-run/workloads"
+
+first_mode=(true false)
+
+# first_mode=(false)
 
 ws=(
 "ycsba    ${workload_path}/ycsb/workloada-load-10000000-10000000.log.formated        ${workload_path}/ycsb/workloada-run-10000000-10000000.log.formated 10000000 10000000"
@@ -17,14 +27,42 @@ ws=(
 # "ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
 )
 
+# threads=(
+# 	1
+# 	4
+# 	8
+# 	12
+# 	16
+# 	20
+# 	24
+# )
+
 threads=(
 	1
-	5
+	2
+	4
+	6
+	8
 	10
-	15
+	12
+	14
+	16
+	18
 	20
-	25
+	22
+	24
+	26
+	28
 	30
+	32
+	34
+	36
+	38
+	40
+	42
+	44
+	46
+	48
 )
 
 
@@ -33,15 +71,15 @@ run_client
 )
 
 kv_sizes=(
-	"16 16"
-	"16 64"
+	# "16 16"
+	# "16 64"
 	"16 256"
-	"16 1024"
+	# "16 1024"
 )
 
 # first_mode=(true false) 
 
-LOG_PATH=${RUN_PATH}/log/${current}.${first_mode}
+LOG_PATH=${RUN_PATH}/log/${current}
 BINARY_PATH=${RUN_PATH}/build/
 
 mkdir -p ${LOG_PATH}
@@ -66,17 +104,23 @@ fi
 
 for w in "${ws[@]}"; do
 
-sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
+# sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
 
 for t in ${threads[*]};do
 
+config_array=()
+for ((port=1; port<=t; port++)); do
+    config_array+=("${config_dir}/mongod${port}.conf")
+done
  
 
-thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143"
+# thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143"
+# thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35"
+thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35,12,13,14,15,16,17,18,19,20,21,22,23,36,37,38,39,40,41,42,43,44,45,46,47"
 
 
 uri_set="mongodb://localhost:27017"
-for ((port=27018; port<=27046; port++)); do
+for ((port=27018; port<=27064; port++)); do
     uri_set+=",mongodb://localhost:$port"
 done
 
@@ -93,6 +137,31 @@ value_size=${kv_size_array[1]}
 
 for h in ${hs[*]};do
 
+
+for mode in "${first_mode[@]}"; do
+
+sudo bash -c "echo 1 > /proc/sys/vm/drop_caches"
+
+if [[ "$mode" == true ]];then
+    echo "hello world"
+	sudo mongod --config "$config_dir/mongod1.conf" --fork 
+    # sudo mongod -f /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/config/mongod1.conf --storageEngine inMemory
+    # sudo service mongod start
+    # sudo service mongod status
+else
+	i=0
+    for conf_file in "${config_array[@]}"; do
+        if [ -f "$conf_file" ] && [ $i -lt $t ]; then
+            echo "Starting MongoDB with configuration file: $conf_file" 
+            sudo mongod --config "$conf_file" --fork
+			i=$((i+1))
+		else
+			break
+        fi
+    done
+fi
+
+
 w_array=( ${w} )
 
 
@@ -108,7 +177,7 @@ h_name=$(basename ${h})
 # cmd="numactl --cpunodebind=1 --membind=2 \
 
 # threads run on numa0, using memory on NUMA4
-cmd="numactl --membind=4 \
+cmd="numactl --membind=2 \
 ${BINARY_PATH}/${h} \
 --num_threads=${t} \
 --core_binding=${thread_binding_seq} \
@@ -139,11 +208,31 @@ ${cmd} 2>&1 |  tee -a ${this_log_path}
 echo log file in : ${this_log_path}
 sleep 10
 
+
+
+if [[ "$mode" == true ]];then
+	# sudo systemctl stop mongod
+    sudo mongod --config "$config_dir/mongod1.conf" --shutdown
+else
+	i=0
+    for conf_file in "${config_array[@]}"; do
+		if [ -f "$conf_file" ] && [ $i -lt $t ]; then
+            sudo mongod --config "$conf_file" --shutdown
+        	echo "Stopped MongoDB instance using configuration: $conf_file"
+			i=$((i+1))
+		else
+			break
+        fi
+    done
+fi
+
+sudo /home/gxr/mongodb-run/test_mongodb/scripts/clear_ramdisk.sh
+
 done
 done
 done
 done
-# done
+done
 
 
 popd

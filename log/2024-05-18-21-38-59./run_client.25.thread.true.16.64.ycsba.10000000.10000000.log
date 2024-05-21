@@ -1,0 +1,188 @@
+numactl --membind=4 /mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build//run_client --num_threads=25 --core_binding=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143 --str_key_size=16 --str_key_size=64 --load_file=/mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-load-10000000-10000000.log.formated --run_file=/mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-run-10000000-10000000.log.formated --URI_set=mongodb://localhost:27017,mongodb://localhost:27018,mongodb://localhost:27019,mongodb://localhost:27020,mongodb://localhost:27021,mongodb://localhost:27022,mongodb://localhost:27023,mongodb://localhost:27024,mongodb://localhost:27025,mongodb://localhost:27026,mongodb://localhost:27027,mongodb://localhost:27028,mongodb://localhost:27029,mongodb://localhost:27030,mongodb://localhost:27031,mongodb://localhost:27032,mongodb://localhost:27033,mongodb://localhost:27034,mongodb://localhost:27035,mongodb://localhost:27036,mongodb://localhost:27037,mongodb://localhost:27038,mongodb://localhost:27039,mongodb://localhost:27040,mongodb://localhost:27041,mongodb://localhost:27042,mongodb://localhost:27043,mongodb://localhost:27044,mongodb://localhost:27045,mongodb://localhost:27046 --first_mode=true
+mongodb://localhost:27017 mongodb://localhost:27018 mongodb://localhost:27019 mongodb://localhost:27020 mongodb://localhost:27021 mongodb://localhost:27022 mongodb://localhost:27023 mongodb://localhost:27024 mongodb://localhost:27025 mongodb://localhost:27026 mongodb://localhost:27027 mongodb://localhost:27028 mongodb://localhost:27029 mongodb://localhost:27030 mongodb://localhost:27031 mongodb://localhost:27032 mongodb://localhost:27033 mongodb://localhost:27034 mongodb://localhost:27035 mongodb://localhost:27036 mongodb://localhost:27037 mongodb://localhost:27038 mongodb://localhost:27039 mongodb://localhost:27040 mongodb://localhost:27041 mongodb://localhost:27042 mongodb://localhost:27043 mongodb://localhost:27044 mongodb://localhost:27045 mongodb://localhost:27046 reading workload files ...
+load_filename : /mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-load-10000000-10000000.log.formated
+read load file needs: 5059898085 s 
+run_filename : /mnt/nvme0/home/gxr/mongdb-run/workloads/ycsb/workloada-run-10000000-10000000.log.formated
+read run file needs: 5128669530 s 
+num_of_load_ops is 10000000
+num_of_run_ops is 10000000
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 URI: URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+URI: mongodb://localhost:27017
+Load workloads needs: 75725775965 ns 
+[report] load_thread_ID : 24
+[report] load_duration_ns : 75725775965
+[report] load_duration_s : 75.725776
+[report] load_throughput : 5282.217249
+[report] load_average_latency_ns : 189314.439913
+Load workloads needs: 78914744060 ns 
+[report] load_thread_ID : 8
+[report] load_duration_ns : 78914744060
+[report] load_duration_s : 78.914744
+[report] load_throughput : 5068.761291
+[report] load_average_latency_ns : 197286.860150
+Load workloads needs: 80293915136 ns 
+[report] load_thread_ID : 12
+[report] load_duration_ns : 80293915136
+[report] load_duration_s : 80.293915
+[report] load_throughput : 4981.697546
+[report] load_average_latency_ns : 200734.787840
+Load workloads needs: 80320903915 ns 
+[report] load_thread_ID : 11
+[report] load_duration_ns : 80320903915
+[report] load_duration_s : 80.320904
+[report] load_throughput : 4980.023636
+[report] load_average_latency_ns : 200802.259787
+Load workloads needs: 80379421147 ns 
+[report] load_thread_ID : 9
+[report] load_duration_ns : 80379421147
+[report] load_duration_s : 80.379421
+[report] load_throughput : 4976.398116
+[report] load_average_latency_ns : 200948.552867
+Load workloads needs: 80644578338 ns 
+[report] load_thread_ID : 10
+[report] load_duration_ns : 80644578338
+[report] load_duration_s : 80.644578
+[report] load_throughput : 4960.035854
+[report] load_average_latency_ns : 201611.445845
+Load workloads needs: 80750089240 ns 
+[report] load_thread_ID : 15
+[report] load_duration_ns : 80750089240
+[report] load_duration_s : 80.750089
+[report] load_throughput : 4953.554897
+[report] load_average_latency_ns : 201875.223100
+Load workloads needs: 82275687669 ns 
+[report] load_thread_ID : 13
+[report] load_duration_ns : 82275687669
+[report] load_duration_s : 82.275688
+[report] load_throughput : 4861.703516
+[report] load_average_latency_ns : 205689.219172
+Load workloads needs: 82279210118 ns 
+[report] load_thread_ID : 14
+[report] load_duration_ns : 82279210118
+[report] load_duration_s : 82.279210
+[report] load_throughput : 4861.495382
+[report] load_average_latency_ns : 205698.025295
+Load workloads needs: 84506208550 ns 
+[report] load_thread_ID : 17
+[report] load_duration_ns : 84506208550
+[report] load_duration_s : 84.506209
+[report] load_throughput : 4733.380030
+[report] load_average_latency_ns : 211265.521375
+Load workloads needs: 84632292542 ns 
+[report] load_thread_ID : 19
+[report] load_duration_ns : 84632292542
+[report] load_duration_s : 84.632293
+[report] load_throughput : 4726.328308
+[report] load_average_latency_ns : 211580.731355
+Load workloads needs: 85296742680 ns 
+[report] load_thread_ID : 1
+[report] load_duration_ns : 85296742680
+[report] load_duration_s : 85.296743
+[report] load_throughput : 4689.510847
+[report] load_average_latency_ns : 213241.856700
+Load workloads needs: 85413941653 ns 
+[report] load_thread_ID : 3
+[report] load_duration_ns : 85413941653
+[report] load_duration_s : 85.413942
+[report] load_throughput : 4683.076232
+[report] load_average_latency_ns : 213534.854133
+Load workloads needs: 86442562767 ns 
+[report] load_thread_ID : 23
+[report] load_duration_ns : 86442562767
+[report] load_duration_s : 86.442563
+[report] load_throughput : 4627.350083
+[report] load_average_latency_ns : 216106.406917
+Load workloads needs: 86562479040 ns 
+[report] load_thread_ID : 18
+[report] load_duration_ns : 86562479040
+[report] load_duration_s : 86.562479
+[report] load_throughput : 4620.939747
+[report] load_average_latency_ns : 216406.197600
+Load workloads needs: 86661021376 ns 
+[report] load_thread_ID : 16
+[report] load_duration_ns : 86661021376
+[report] load_duration_s : 86.661021
+[report] load_throughput : 4615.685272
+[report] load_average_latency_ns : 216652.553440
+Load workloads needs: 86731146398 ns 
+[report] load_thread_ID : 21
+[report] load_duration_ns : 86731146398
+[report] load_duration_s : 86.731146
+[report] load_throughput : 4611.953336
+[report] load_average_latency_ns : 216827.865995
+Load workloads needs: 86744470123 ns 
+[report] load_thread_ID : 7
+[report] load_duration_ns : 86744470123
+[report] load_duration_s : 86.744470
+[report] load_throughput : 4611.244952
+[report] load_average_latency_ns : 216861.175308
+Load workloads needs: 86812790221 ns 
+[report] load_thread_ID : 22
+[report] load_duration_ns : 86812790221
+[report] load_duration_s : 86.812790
+[report] load_throughput : 4607.615986
+[report] load_average_latency_ns : 217031.975552
+Load workloads needs: 86857428500 ns 
+[report] load_thread_ID : 20
+[report] load_duration_ns : 86857428500
+[report] load_duration_s : 86.857428
+[report] load_throughput : 4605.248013
+[report] load_average_latency_ns : 217143.571250
+Load workloads needs: 87101645332 ns 
+[report] load_thread_ID : 4
+[report] load_duration_ns : 87101645332
+[report] load_duration_s : 87.101645
+[report] load_throughput : 4592.335753
+[report] load_average_latency_ns : 217754.113330
+Load workloads needs: 87159075338 ns 
+[report] load_thread_ID : 2
+[report] load_duration_ns : 87159075338
+[report] load_duration_s : 87.159075
+[report] load_throughput : 4589.309816
+[report] load_average_latency_ns : 217897.688345
+Load workloads needs: 87208930909 ns 
+[report] load_thread_ID : 5
+[report] load_duration_ns : 87208930909
+[report] load_duration_s : 87.208931
+[report] load_throughput : 4586.686201
+[report] load_average_latency_ns : 218022.327272
+Load workloads needs: 87217644329 ns 
+[report] load_thread_ID : 6
+[report] load_duration_ns : 87217644329
+[report] load_duration_s : 87.217644
+[report] load_throughput : 4586.227971
+[report] load_average_latency_ns : 218044.110822
+Load workloads needs: 87436665267 ns 
+[report] load_thread_ID : 0
+[report] load_duration_ns : 87436665267
+[report] load_duration_s : 87.436665
+[report] load_throughput : 4574.739885
+[report] load_average_latency_ns : 218591.663167
+All clients run done needs: 87436040789 ns 
+[report] load_overall_duration_ns : 87436040789
+[report] load_overall_duration_s : 87.436041
+[report] load_overall_throughput : 114369.313955
+[report] load_overall_average_latency_ns : 8743.604079

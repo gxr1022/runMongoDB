@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/nvme0/home/gxr/mongdb-run/test_mongodb
+# Install script for directory: /home/gxr/mongodb-run/test_mongodb
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/gxr/mongodb-run/test_mongodb/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

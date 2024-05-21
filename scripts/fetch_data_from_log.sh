@@ -4,15 +4,15 @@ set -x
 
 cur_date=$1
 
-logs_folder="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/log/$cur_date"
-csv_folder="/mnt/nvme0/home/gxr/mongdb-run/test_mongodb/data/$cur_date"
+logs_folder="/home/gxr/mongodb-run/test_mongodb/log/$cur_date"
+csv_folder="/home/gxr/mongodb-run/test_mongodb/data/$cur_date"
 
 
 
 mkdir -p "$csv_folder"
 
 csv_file="$csv_folder/${cur_date}_result.csv"
-echo "thread_number,load_operations,run_operations,key_size(B),value_size(B),overall_throughput(IOPS),average_latency(ns)" > "$csv_file"
+echo "mode,thread_number,load_operations,run_operations,key_size(B),value_size(B),overall_throughput(IOPS),average_latency(ns)" > "$csv_file"
 
 
 for logfile in "$logs_folder"/*.log; do
@@ -28,7 +28,8 @@ for logfile in "$logs_folder"/*.log; do
     thread_number=$(echo "$logname" | cut -d '.' -f 2)
     load_operations=$(echo "$logname" | cut -d '.' -f 8)
     run_operations=$(echo "$logname" | cut -d '.' -f 9)
+    mode=$(echo "$logname" | cut -d '.' -f 4)
 
-    echo "$thread_number,$load_operations,$run_operations,$key_size,$value_size,$overall_throughput,$average_latency" >> "$csv_file"
+    echo "$mode,$thread_number,$load_operations,$run_operations,$key_size,$value_size,$overall_throughput,$average_latency" >> "$csv_file"
 
 done
