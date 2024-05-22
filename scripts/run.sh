@@ -17,53 +17,53 @@ workload_path="/home/gxr/mongodb-run/workloads"
 
 first_mode=(true false)
 
-# first_mode=(false)
+# first_mode=(true)
 
 ws=(
-"ycsba    ${workload_path}/ycsb/workloada-load-10000000-10000000.log.formated        ${workload_path}/ycsb/workloada-run-10000000-10000000.log.formated 10000000 10000000"
+"ycsba    ${workload_path}/ycsb/workloada-load-10000000-1000000.log.formated        ${workload_path}/ycsb/workloada-run-10000000-1000000.log.formated 10000000 1000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-1000000-1000000.log.formated        ${workload_path}/ycsb/workloada-run-1000000-1000000.log.formated 1000000 1000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-5000000-5000000.log.formated        ${workload_path}/ycsb/workloada-run-5000000-5000000.log.formated 5000000 5000000"
-# "ycsba    ${workload_path}/ycsb/workloada-load-50000000-50000000.log.formated        ${workload_path}/ycsb/workloada-run-50000000-50000000.log.formated 50000000 50000000"
+# "ycsba    ${workload_path}/ycsb/workloada-load-50000000-5000000.log.formated        ${workload_path}/ycsb/workloada-run-50000000-5000000.log.formated 50000000 5000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
+)
+
+threads=(
+	1
+	4
+	8
+	12
+	16
+	20
+	24
 )
 
 # threads=(
 # 	1
+# 	2
 # 	4
+# 	6
 # 	8
+# 	10
 # 	12
+# 	14
 # 	16
+# 	18
 # 	20
+# 	22
 # 	24
+# 	26
+# 	28
+# 	30
+# 	32
+# 	34
+# 	36
+# 	38
+# 	40
+# 	42
+# 	44
+# 	46
+# 	48
 # )
-
-threads=(
-	1
-	2
-	4
-	6
-	8
-	10
-	12
-	14
-	16
-	18
-	20
-	22
-	24
-	26
-	28
-	30
-	32
-	34
-	36
-	38
-	40
-	42
-	44
-	46
-	48
-)
 
 
 hs=(
@@ -115,9 +115,13 @@ done
  
 
 # thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143"
-# thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35"
-thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35,12,13,14,15,16,17,18,19,20,21,22,23,36,37,38,39,40,41,42,43,44,45,46,47"
+thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"
+# thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35,12,13,14,15,16,17,18,19,20,21,22,23,36,37,38,39,40,41,42,43,44,45,46,47"
+# thread_binding_seq="12,13,14,15,16,17,18,19,20,21,22,23"
 
+# thread_binding_seq="0,1,2,3,4,5,6,7,8,9,10,11"
+
+# thread_binding_seq="0,12,2,13,4,14,6,15,8,16,10,17,1,18,3,19,5,20,7,21,9,22,11,23"
 
 uri_set="mongodb://localhost:27017"
 for ((port=27018; port<=27064; port++)); do
