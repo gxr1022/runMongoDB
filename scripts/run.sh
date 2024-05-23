@@ -113,7 +113,7 @@ ${BINARY_PATH}/${h} \
 --num_threads=${t} \
 --core_binding=${thread_binding_seq} \
 --str_key_size=${key_size} \
---str_key_size=${value_size} \
+--str_value_size=${value_size} \
 --load_file=${w_load_file} \
 --run_file=${w_run_file}  \
 --URI_set=${uri_set} \

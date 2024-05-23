@@ -26,11 +26,13 @@ first_mode=(true false)
 # first_mode=(false)
 
 ws=(
-"ycsba    ${workload_path}/ycsb/workloada-load-10000000-10000000.log.formated        ${workload_path}/ycsb/workloada-run-10000000-10000000.log.formated 10000000 10000000"
+# "ycsba    ${workload_path}/ycsb/workloada-load-10000000-10000000.log.formated        ${workload_path}/ycsb/workloada-run-10000000-10000000.log.formated 10000000 10000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-1000000-1000000.log.formated        ${workload_path}/ycsb/workloada-run-1000000-1000000.log.formated 1000000 1000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-5000000-5000000.log.formated        ${workload_path}/ycsb/workloada-run-5000000-5000000.log.formated 5000000 5000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-50000000-50000000.log.formated        ${workload_path}/ycsb/workloada-run-50000000-50000000.log.formated 50000000 50000000"
 # "ycsba    ${workload_path}/ycsb/workloada-load-100000-100000.log.formated        ${workload_path}/ycsb/workloada-run-100000-100000.log.formated 100000 100000"
+"ycsbc    ${workload_path}/ycsb/workloadc-load-10000000-10000.log.formated        ${workload_path}/ycsb/workloadc-run-10000000-10000.log.formated 10000000 10000"
+
 )
 
 # threads=(
@@ -49,13 +51,13 @@ ws=(
 # 	24
 # )
 
-threads=(1)
+threads=(32)
 # Generate subsequent elements by adding 2 to the previous element
-for ((i = 4; i <= 128; i += 4)); do
+for ((i = 40; i <= 129; i += 8)); do
     threads+=($i)
 done
 
-# threads=(125)
+# threads=(64)
 
 hs=(
 run_client
@@ -160,7 +162,7 @@ w_name=${w_array[0]}
 w_load_file=${w_array[1]}
 w_run_file=${w_array[2]}
 load_num=${w_array[3]}
-run_num=${w_array[3]}
+run_num=${w_array[4]}
 
 
 h_name=$(basename ${h})
@@ -168,12 +170,12 @@ h_name=$(basename ${h})
 # cmd="numactl --cpunodebind=1 --membind=2 \
 
 # threads run on numa0, using memory on NUMA4
-cmd="numactl --membind=4 \
+cmd="numactl --membind=0 \
 ${BINARY_PATH}/${h} \
 --num_threads=${t} \
 --core_binding=${thread_binding_seq} \
 --str_key_size=${key_size} \
---str_key_size=${value_size} \
+--str_value_size=${value_size} \
 --load_file=${w_load_file} \
 --run_file=${w_run_file}  \
 --URI_set=${uri_set} \
